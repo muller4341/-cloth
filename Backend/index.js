@@ -51,14 +51,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Creating upload endpoint for image
-app.use('/images', Express.static(path.join(__dirname, './upload/images')));
-app.post('/upload', upload.single('product'), (req, res) => {
-    res.json({
-        success: 1,
-        image_url: `https://cloth-1.onrender.com/images/${req.file.filename}`
-    }); 
-});
+
     // creating database sheema
 
     const  Product= mongoose.model('product', {
@@ -96,6 +89,39 @@ app.post('/upload', upload.single('product'), (req, res) => {
             default: true,
         },
     });
+// creating model schema for users
+const Users = mongoose.model('Users', {
+    name: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        uniuqe: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    cartData: {
+        type: Object,
+        
+    },
+
+    date: {
+        type: Date,
+        default: Date.now,
+    },
+});
+    // Creating upload endpoint for image
+app.use('/images', Express.static(path.join(__dirname, './upload/images')));
+app.post('/upload', upload.single('product'), (req, res) => {
+    res.json({
+        success: 1,
+        image_url: `https://cloth-1.onrender.com/images/${req.file.filename}`
+    }); 
+});
 
     app.post('/addproduct', async (req, res) => {
         let lastProduct = await Product.findOne({}).sort('-id');
@@ -145,31 +171,7 @@ app.post('/upload', upload.single('product'), (req, res) => {
     }
     );
 
-    // creating model schema for users
-    const Users = mongoose.model('Users', {
-        name: {
-            type: String,
-            required: true,
-        },
-        email: {
-            type: String,
-            required: true,
-            uniuqe: true,
-        },
-        password: {
-            type: String,
-            required: true,
-        },
-        cartData: {
-            type: Object,
-            
-        },
-
-        date: {
-            type: Date,
-            default: Date.now,
-        },
-    });
+    
     // creating API for adding user
     app.post('/signup', async (req, res) => {
         let check= await Users.findOne({email: req.body.email});
